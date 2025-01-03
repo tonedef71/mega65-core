@@ -2492,9 +2492,11 @@ begin
         -- fiddle with registers in this range.
         -- NEW VIDEO REGISTERS
         elsif register_number=47 then
-          -- @IO:C65 $D02F VIC-III:KEY Write $A5 then $96 to enable C65/VIC-III IO registers
-          -- @IO:C64 $D02F VIC-II:KEY Write anything to return to C64/VIC-II IO map
+          -- @IO:C64 $D02F VIC-II:KEY Write $00 then $00 to enable C64/VIC-II IO registers
+          -- this is actually the default when not hitting any of the other keys, but we
+          -- promote writing 00, 00 to keep it more transparent for further expansions.
           viciii_iomode <= "00"; -- by default go back to VIC-II mode
+          -- @IO:C65 $D02F VIC-III:KEY Write $A5 then $96 to enable C65/VIC-III IO registers
           if reg_key=x"a5" then
             if fastio_wdata=x"96" then
               -- C65 VIC-III mode
