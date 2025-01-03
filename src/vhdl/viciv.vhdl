@@ -2577,22 +2577,22 @@ begin
           viciv_legacy_mode_registers_touched <= '1';
         elsif register_number=50 then
           bitplane_enables <= fastio_wdata;
-        -- @IO:C65 $D033.5-7 VIC-III:B0ADODD Odd rows of Even Bitplane 0 address[15:13] (only used in v400 mode)
-        -- @IO:C65 $D033.1-3 VIC-III:B0ADEVN Even rows of Even Bitplane 0 address[15:13] (for v200, even row drawn twice)
-        -- @IO:C65 $D034.5-7 VIC-III:B1ADODD Odd rows of Odd Bitplane 1 address[15:13] (+64KB) (only used in v400 mode)
-        -- @IO:C65 $D034.1-3 VIC-III:B1ADEVN Even rows of Odd Bitplane 1 address[15:13] (+64KB) (for v200, even row drawn twice)
-        -- @IO:C65 $D035.5-7 VIC-III:B2ADODD Odd rows of Even Bitplane 2 address[15:13] (only used in v400 mode)
-        -- @IO:C65 $D035.1-3 VIC-III:B2ADEVN Even rows of Even Bitplane 2 address[15:13] (for v200, even row drawn twice)
-        -- @IO:C65 $D036.5-7 VIC-III:B3ADODD Odd rows of Odd Bitplane 3 address[15:13] (+64KB) (only used in v400 mode)
-        -- @IO:C65 $D036.1-3 VIC-III:B3ADEVN Even rows of Odd Bitplane 3 address[15:13] (+64KB) (for v200, even row drawn twice)
-        -- @IO:C65 $D037.5-7 VIC-III:B4ADODD Odd rows of Even Bitplane 4 address[15:13] (only used in v400 mode)
-        -- @IO:C65 $D037.1-3 VIC-III:B4ADEVN Even rows of Even Bitplane 4 address[15:13] (for v200, even row drawn twice)
-        -- @IO:C65 $D038.5-7 VIC-III:B5ADODD Odd rows of Odd Bitplane 5 address[15:13] (+64KB) (only used in v400 mode)
-        -- @IO:C65 $D038.1-3 VIC-III:B5ADEVN Even rows of Odd Bitplane 5 address[15:13] (+64KB) (for v200, even row drawn twice)
-        -- @IO:C65 $D039.5-7 VIC-III:B6ADODD Odd rows of Even Bitplane 6 address[15:13] (only used in v400 mode)
-        -- @IO:C65 $D039.1-3 VIC-III:B6ADEVN Even rows of Even Bitplane 6 address[15:13] (for v200, even row drawn twice)
-        -- @IO:C65 $D03A.5-7 VIC-III:B7ADODD Odd rows of Odd Bitplane 7 address[15:13] (+64KB) (only used in v400 mode)
-        -- @IO:C65 $D03A.1-3 VIC-III:B7ADEVN Even rows of Odd Bitplane 7 address[15:13] (+64KB) (for v200, even row drawn twice)
+        -- @IO:C65 $D033.5-7 VIC-III:B0ADODD@BXADODD Odd rows of even Bitplane X address[15:13] (only used in v400 mode)
+        -- @IO:C65 $D033.1-3 VIC-III:B0ADEVN@BXADEVN Even rows of even Bitplane X address[15:13] (for v200, even row drawn twice)
+        -- @IO:C65 $D034.5-7 VIC-III:B1ADODD@BYADODD Odd rows of odd Bitplane Y address[15:13] (+64KB) (only used in v400 mode)
+        -- @IO:C65 $D034.1-3 VIC-III:B1ADEVN@BYADEVN Even rows of odd Bitplane Y address[15:13] (+64KB) (for v200, even row drawn twice)
+        -- @IO:C65 $D035.5-7 VIC-III:B2ADODD @BXADODD
+        -- @IO:C65 $D035.1-3 VIC-III:B2ADEVN @BXADEVN
+        -- @IO:C65 $D036.5-7 VIC-III:B3ADODD @BYADODD
+        -- @IO:C65 $D036.1-3 VIC-III:B3ADEVN @BYADEVN
+        -- @IO:C65 $D037.5-7 VIC-III:B4ADODD @BXADODD
+        -- @IO:C65 $D037.1-3 VIC-III:B4ADEVN @BXADEVN
+        -- @IO:C65 $D038.5-7 VIC-III:B5ADODD @BYADODD
+        -- @IO:C65 $D038.1-3 VIC-III:B5ADEVN @BYADEVN
+        -- @IO:C65 $D039.5-7 VIC-III:B6ADODD @BXADODD
+        -- @IO:C65 $D039.1-3 VIC-III:B6ADEVN @BXADEVN
+        -- @IO:C65 $D03A.5-7 VIC-III:B7ADODD @BYADODD
+        -- @IO:C65 $D03A.1-3 VIC-III:B7ADEVN @BYADEVN
         elsif register_number >= 51 and register_number <= 58 then
           -- @IO:C65 $D033-$D03A - VIC-III Bitplane addresses
           --bitplane_number := safe_to_integer(register_number(3 downto 0)) - 3;
