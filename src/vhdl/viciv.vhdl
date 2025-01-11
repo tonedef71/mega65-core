@@ -2560,7 +2560,7 @@ begin
           bitplane_mode <= fastio_wdata(4);
           -- @IO:C65 $D031.3 VIC-III:V400 Enable 400 vertical pixels (disables PALEMU)
           reg_v400 <= fastio_wdata(3);
-          -- @IO:C65 $D031.2 VIC-III:H1280 Enable 1280 horizontal pixels (not implemented, disabled PALEMU)
+          -- @IO:C65 $D031.2 VIC-III:H1280 Enable 1280 horizontal pixels (not implemented, disables PALEMU)
           reg_h1280 <= fastio_wdata(2);
           -- @IO:C65 $D031.1 VIC-III:MONO Enable VIC-III MONO composite video output (colour if disabled)
           reg_mono <= fastio_wdata(1);
@@ -2694,7 +2694,7 @@ begin
           compositer_enable <= fastio_wdata(7);
           -- @IO:GS $D054.6 VIC-IV:VFAST C65GS FAST mode (48MHz)
           viciv_fast_internal <= fastio_wdata(6);
-          -- @IO:GS $D054.5 VIC-IV:PALEMU Enable PAL CRT-like scan-line emulation (not in combination with V400 or H1280)
+          -- @IO:GS $D054.5 VIC-IV:PALEMU Enable PAL CRT-like scan-line emulation (disabled by V400 or H1280)
           pal_simulate <= fastio_wdata(5);
           -- @IO:GS $D054.4 VIC-IV:SPR!H640 Sprite H640 enable
           sprite_h640 <= fastio_wdata(4);
