@@ -3945,7 +3945,7 @@ begin
         vga_palin_blue <= vga_filtered_blue(9 downto 2);
       end if;
 
-      if pal_simulate='1' and reg_h1280 = '0' and reg_v400 = '0' then
+      if pal_simulate='1' and reg_h1280 = '0' and (reg_v400 = '0' or (reg_v400 = '1' and raster_buffer_double_line = '1')) then
         vga_out_red <= vga_palout_red;
         vga_out_green <= vga_palout_green;
         vga_out_blue <= vga_palout_blue;
