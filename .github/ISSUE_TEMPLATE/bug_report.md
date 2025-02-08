@@ -9,7 +9,8 @@ assignees: ''
 ---
 
 **Test Environment (required)**
-You can use [MEGA65INFO](https://files.mega65.org?id=3eeb7d82-8bd7-44b7-82b6-cef29d123b0e) to retrieve this.
+You can use MEGAINFO from within FREEZER to obtain this information
+(long press RESTORE to enter FREEZER, then press HELP to start MEGAINFO)
  - Platform: (DevKit, MEGA65R3, MEGA65R6, NexysA7, xemu, etc.)
  - Core Commit: (7 digit hex number, press MEGA-TAB)
  - ROM Release: (i.e. 920XXX)
