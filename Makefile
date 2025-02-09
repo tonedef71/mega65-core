@@ -183,14 +183,18 @@ SDCARD_FILES= \
 FLASHER_FILES= \
 	$(UTILDIR)/megaflash/mflash.prg
 
-CHECK_CURRENT_TARGETS=check-mega65r4 check-mega65r3 check-mega65r2 check-nexys4ddr-widget
+CURRENT_TARGETS=mega65r6 mega65r4 mega65r3 mega65r2 nexys4ddr-widget
+CHECK_CURRENT_TARGETS=check-mega65r6 check-mega65r4 check-mega65r3 check-mega65r2 check-nexys4ddr-widget
 
 all:	freezer_files $(SDCARD_DIR)/MEGA65.D81
 	$(info ...)
 	$(info ======================================================================================)
 	$(info Please do make bin/TARGET.bit to build a bitstream (for example make bin/mega65r3.bit))
 	$(info or read docs/build.md for more information about the build process)
+	$(info VALID targets are:)
+	$(info $(CURRENT_TARGETS))
 	$(info ======================================================================================)
+	$(info ...)
 
 # phony target to force submodule builds
 FORCE:
@@ -1375,6 +1379,29 @@ check-%:	vivado/%.xpr $(VHDLSRCDIR)/*.vhdl $(VHDLSRCDIR)/*.xdc $(VERILOGSRCDIR)/
 	./vivado_check $*
 
 $(BINDIR)/%.bit: 	vivado/%.xpr preliminaries $(VHDLSRCDIR)/*.vhdl $(VHDLSRCDIR)/*.xdc $(VERILOGSRCDIR)/*.v $(SRCDIR)/version.txt
+	# check against all current targets and abort if necessary
+	@valid_target=0; for target in $(CURRENT_TARGETS); do \
+		if [ $$target = $* ]; then \
+			valid_target=1; \
+		fi \
+	done; \
+	if [ $$valid_target = 0 ]; then \
+		echo; \
+		echo "=============================================================================="; \
+		echo "$* is not in the list of CURRENT_TARGETS, refusing to build."; \
+		echo; \
+		if [ $* = mega65r5 ]; then \
+			echo "Please use the mega65r6 target for mega65r5, there is not really difference."; \
+			echo; \
+		fi; \
+		echo "Probably this target is not maintained, and therefore does not build cleanly."; \
+		echo "If you haved fixed the build of this target, please add it to CURRENT_TARGETS."; \
+		echo "Current targets are:"; \
+		echo $(CURRENT_TARGETS); \
+		echo "=============================================================================="; \
+		echo; \
+		exit 1; \
+	fi
 	echo MOOSE $@ from $<
 #	@rm -f $@
 #	@echo "---------------------------------------------------------"

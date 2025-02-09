@@ -1811,7 +1811,7 @@ begin
                                         -- fiddle with registers in this range.
                                         --  For more C65 register info, see:
                                         -- http://www.zimmers.net/cbmpics/cbm/c65/c65manual.txt
-        -- @IO:C65 $D032 - Bitplane enable bits
+        -- @IO:C65 $D032 VIC-III:BPENABLE Bitplane enable bits
         elsif register_number=50 then
           fastio_rdata <= bitplane_enables;
         -- @IO:C65 $D033 - Bitplane 0 address
@@ -2492,10 +2492,11 @@ begin
         -- fiddle with registers in this range.
         -- NEW VIDEO REGISTERS
         elsif register_number=47 then
-          -- @IO:C65 $D02F VIC-III KEY register for unlocking extended registers.
-          -- @IO:C65 $D02F VIC-III:KEY Write $A5 then $96 to enable C65/VIC-III IO registers
-          -- @IO:C65 $D02F Write anything else to return to C64/VIC-II IO map
+          -- @IO:C64 $D02F VIC-II:KEY Write $00 then $00 to enable C64/VIC-II IO registers
+          -- this is actually the default when not hitting any of the other keys, but we
+          -- promote writing 00, 00 to keep it more transparent for further expansions.
           viciii_iomode <= "00"; -- by default go back to VIC-II mode
+          -- @IO:C65 $D02F VIC-III:KEY Write $A5 then $96 to enable C65/VIC-III IO registers
           if reg_key=x"a5" then
             if fastio_wdata=x"96" then
               -- C65 VIC-III mode
@@ -2507,7 +2508,7 @@ begin
               -- C65GS VIC-IV mode
               viciii_iomode <= "11";
             end if;
-          -- @IO:GS $D02F VIC-IV:KEY Write $45 then $54 to map 45E100 ethernet controller buffers to $D000-$DFFF
+          -- @IO:GS $D02F ETH:KEY Write $45 then $54 to map 45E100 ethernet controller buffers to $D000-$DFFF
           elsif reg_key=x"45" then
             if fastio_wdata=x"54" then
               -- C65GS Map ethernet frame buffer mode
@@ -2557,9 +2558,9 @@ begin
           viciii_extended_attributes <= fastio_wdata(5);
           -- @IO:C65 $D031.4 VIC-III:BPM Bit-Plane Mode
           bitplane_mode <= fastio_wdata(4);
-          -- @IO:C65 $D031.3 VIC-III:V400 Enable 400 vertical pixels
+          -- @IO:C65 $D031.3 VIC-III:V400 Enable 400 vertical pixels (disables PALEMU)
           reg_v400 <= fastio_wdata(3);
-          -- @IO:C65 $D031.2 VIC-III:H1280 Enable 1280 horizontal pixels (not implemented)
+          -- @IO:C65 $D031.2 VIC-III:H1280 Enable 1280 horizontal pixels (not implemented, disables PALEMU)
           reg_h1280 <= fastio_wdata(2);
           -- @IO:C65 $D031.1 VIC-III:MONO Enable VIC-III MONO composite video output (colour if disabled)
           reg_mono <= fastio_wdata(1);
@@ -2577,22 +2578,22 @@ begin
           viciv_legacy_mode_registers_touched <= '1';
         elsif register_number=50 then
           bitplane_enables <= fastio_wdata;
-        -- @IO:C65 $D033.5-7 VIC-III:B0ADODD@BXADODD Bitplane X address, odd lines
-        -- @IO:C65 $D033.1-3 VIC-III:B0ADEVN@BXADEVN Bitplane X address, even lines
-        -- @IO:C65 $D034.5-7 VIC-III:B1ADODD @BXADODD
-        -- @IO:C65 $D034.1-3 VIC-III:B1ADEVN @BXADEVN
+        -- @IO:C65 $D033.5-7 VIC-III:B0ADODD@BXADODD Odd rows of even Bitplane X address[15:13] (only used in v400 mode)
+        -- @IO:C65 $D033.1-3 VIC-III:B0ADEVN@BXADEVN Even rows of even Bitplane X address[15:13] (for v200, even row drawn twice)
+        -- @IO:C65 $D034.5-7 VIC-III:B1ADODD@BYADODD Odd rows of odd Bitplane Y address[15:13] (+64KB) (only used in v400 mode)
+        -- @IO:C65 $D034.1-3 VIC-III:B1ADEVN@BYADEVN Even rows of odd Bitplane Y address[15:13] (+64KB) (for v200, even row drawn twice)
         -- @IO:C65 $D035.5-7 VIC-III:B2ADODD @BXADODD
         -- @IO:C65 $D035.1-3 VIC-III:B2ADEVN @BXADEVN
-        -- @IO:C65 $D036.5-7 VIC-III:B3ADODD @BXADODD
-        -- @IO:C65 $D036.1-3 VIC-III:B3ADEVN @BXADEVN
+        -- @IO:C65 $D036.5-7 VIC-III:B3ADODD @BYADODD
+        -- @IO:C65 $D036.1-3 VIC-III:B3ADEVN @BYADEVN
         -- @IO:C65 $D037.5-7 VIC-III:B4ADODD @BXADODD
         -- @IO:C65 $D037.1-3 VIC-III:B4ADEVN @BXADEVN
-        -- @IO:C65 $D038.5-7 VIC-III:B5ADODD @BXADODD
-        -- @IO:C65 $D038.1-3 VIC-III:B5ADEVN @BXADEVN
+        -- @IO:C65 $D038.5-7 VIC-III:B5ADODD @BYADODD
+        -- @IO:C65 $D038.1-3 VIC-III:B5ADEVN @BYADEVN
         -- @IO:C65 $D039.5-7 VIC-III:B6ADODD @BXADODD
         -- @IO:C65 $D039.1-3 VIC-III:B6ADEVN @BXADEVN
-        -- @IO:C65 $D03A.5-7 VIC-III:B7ADODD @BXADODD
-         -- @IO:C65 $D03A.1-3 VIC-III:B7ADEVN @BXADEVN
+        -- @IO:C65 $D03A.5-7 VIC-III:B7ADODD @BYADODD
+        -- @IO:C65 $D03A.1-3 VIC-III:B7ADEVN @BYADEVN
         elsif register_number >= 51 and register_number <= 58 then
           -- @IO:C65 $D033-$D03A - VIC-III Bitplane addresses
           --bitplane_number := safe_to_integer(register_number(3 downto 0)) - 3;
@@ -2693,7 +2694,7 @@ begin
           compositer_enable <= fastio_wdata(7);
           -- @IO:GS $D054.6 VIC-IV:VFAST C65GS FAST mode (48MHz)
           viciv_fast_internal <= fastio_wdata(6);
-          -- @IO:GS $D054.5 VIC-IV:PALEMU Enable PAL CRT-like scan-line emulation
+          -- @IO:GS $D054.5 VIC-IV:PALEMU Enable PAL CRT-like scan-line emulation (disabled by V400 or H1280)
           pal_simulate <= fastio_wdata(5);
           -- @IO:GS $D054.4 VIC-IV:SPR!H640 Sprite H640 enable
           sprite_h640 <= fastio_wdata(4);
@@ -3944,7 +3945,7 @@ begin
         vga_palin_blue <= vga_filtered_blue(9 downto 2);
       end if;
 
-      if pal_simulate='1' and (reg_h1280 = '0') then
+      if pal_simulate='1' and reg_h1280 = '0' and (reg_v400 = '0' or (reg_v400 = '1' and raster_buffer_double_line = '1')) then
         vga_out_red <= vga_palout_red;
         vga_out_green <= vga_palout_green;
         vga_out_blue <= vga_palout_blue;
@@ -4091,7 +4092,10 @@ begin
                      render_activity <= "000";
         when FetchScreenRamLine =>
           -- Make sure that painting is not in progress
-          if paint_ready='1' then
+          if bitplane_mode='1' then
+            paint_fsm_state <= Idle;
+            raster_fetch_state <= EndOfCharGen;
+          elsif paint_ready='1' then
             -- Set FSM state so that no painting occurs, and so that we
             -- continue to fetch the screen row.  Note that here we just
             -- schedule the memory reads.  The data is written elsewhere.  This
@@ -4986,25 +4990,24 @@ begin
           else
             -- Fetch VIC-III bitplanes
             -- Bitplanes for odd raster lines
-            -- All figures are increased by 1/3 to allow for 800 wide when required
             if (reg_h640='0' and reg_h1280='0') then
               if bitplane_sixteen_colour_mode_flags(sprite_fetch_sprite_number mod 8)='0'
               then
                 -- 320px, mono bitplane = 40 bytes for 320 pixels
-                max_sprite_fetch_byte_number <= 49; -- 39;
+                max_sprite_fetch_byte_number <= 39;
               else
                 -- 320px, 16-colour bitplane = 160 bytes for 320 pixels
-                max_sprite_fetch_byte_number <= 199; -- 159;
+                max_sprite_fetch_byte_number <= 159;
               end if;
             end if;
             if (reg_h640='1' and reg_h1280='0') then
               if bitplane_sixteen_colour_mode_flags(sprite_fetch_sprite_number mod 8)='0'
               then
-                -- 320px, mono bitplane = 80 bytes for 640 pixels
-                max_sprite_fetch_byte_number <= 99; -- 79;
+                -- 640px, mono bitplane = 80 bytes for 640 pixels
+                max_sprite_fetch_byte_number <= 79;
               else
-                -- 320px, 16-colour bitplane = 320 bytes for 640 pixels
-                max_sprite_fetch_byte_number <= 399; -- 319;
+                -- 640px, 16-colour bitplane = 320 bytes for 640 pixels
+                max_sprite_fetch_byte_number <= 319;
               end if;
             end if;
             -- Don't waste time fetching bitplanes that are disabled.
