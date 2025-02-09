@@ -36,31 +36,31 @@ dos_and_process_trap_table:
         !16 trap_dos_getdefaultdrive
         !16 trap_dos_getcurrentdrive          ;; appears out-of-order (is far below)
         !16 trap_dos_selectdrive
-        !16 trap_dos_getdisksize              ;; not currently implememted
-        !16 trap_dos_getcwd                   ;; not currently implememted
-        !16 trap_dos_chdir                    
-        !16 trap_dos_mkdir                    ;; not currently implememted
+        !16 trap_dos_getdisksize              ;; not currently implemented
+        !16 trap_dos_getcwd                   ;; not currently implemented
+        !16 trap_dos_chdir
+        !16 trap_dos_mkdir                    ;; not currently implemented
 
         ;; $10 - $1E
         ;;
-        !16 trap_dos_rmdir                    ;; not currently implememted
+        !16 trap_dos_rmdir                    ;; not currently implemented
         !16 trap_dos_opendir
         !16 trap_dos_readdir
         !16 trap_dos_closedir
         !16 trap_dos_openfile
-        !16 trap_dos_readfile                 
-        !16 trap_dos_writefile                ;; not currently implememted
+        !16 trap_dos_readfile
+        !16 trap_dos_writefile
         !16 trap_dos_mkfile                   ;; implementation started
 
         ;; $20 - $2E
         ;;
         !16 trap_dos_closefile
         !16 trap_dos_closeall
-        !16 trap_dos_seekfile                 ;; not currently implememted
-        !16 trap_dos_rmfile                   ;; not currently implememted
-        !16 trap_dos_fstat                    ;; not currently implememted
-        !16 trap_dos_rename                   ;; not currently implememted
-        !16 trap_dos_filedate                 ;; not currently implememted
+        !16 trap_dos_seekfile                 ;; not currently implemented
+        !16 trap_dos_rmfile
+        !16 trap_dos_fstat                    ;; implementation started
+        !16 trap_dos_rename                   ;; not currently implemented
+        !16 trap_dos_filedate                 ;; not currently implemented
         !16 trap_dos_setname
 
         ;; $30 - $3E
@@ -76,36 +76,36 @@ dos_and_process_trap_table:
 
         ;; $40 - $4E
         ;;
-        !16 trap_dos_d81attach0
-        !16 trap_dos_d81detach
+        !16 trap_dos_d81attach0               ;; DOS 1.2 compatibility - DEPRECATED in favor of trap_dos_attach
+        !16 trap_dos_d81detach                ;; DOS 1.2 compatibility - DEPRECATED in favor of trap_dos_attach
         !16 trap_dos_d81write_en
-        !16 trap_dos_d81attach1
+        !16 trap_dos_d81attach1               ;; DOS 1.2 compatibility - DEPRECATED in favor of trap_dos_attach
         !16 trap_dos_get_proc_desc
-        !16 invalid_subfunction
+        !16 trap_dos_attach
         !16 invalid_subfunction
         !16 invalid_subfunction
 
         ;; $50 - $5E
         ;;
-        !16 trap_dos_gettasklist              ;; not currently implememted
-        !16 trap_dos_sendmessage              ;; not currently implememted
-        !16 trap_dos_receivemessage           ;; not currently implememted
-        !16 trap_dos_writeintotask            ;; not currently implememted
-        !16 trap_dos_readoutoftask            ;; not currently implememted
+        !16 trap_dos_gettasklist              ;; not currently implemented
+        !16 trap_dos_sendmessage              ;; not currently implemented
+        !16 trap_dos_receivemessage           ;; not currently implemented
+        !16 trap_dos_writeintotask            ;; not currently implemented
+        !16 trap_dos_readoutoftask            ;; not currently implemented
         !16 invalid_subfunction
         !16 invalid_subfunction
         !16 invalid_subfunction
 
         ;; $60 - $6E
         ;;
-        !16 trap_dos_terminateothertask       ;; not currently implememted
-        !16 trap_dos_create_task_native       ;; not currently implememted
-        !16 trap_dos_load_into_task           ;; not currently implememted
-        !16 trap_dos_create_task_c64          ;; not currently implememted
-        !16 trap_dos_create_task_c65          ;; not currently implememted
-        !16 trap_dos_exit_and_switch_to_task  ;; not currently implememted
-        !16 trap_dos_switch_to_task           ;; not currently implememted
-        !16 trap_dos_exit_task                ;; not currently implememted
+        !16 trap_dos_terminateothertask       ;; not currently implemented
+        !16 trap_dos_create_task_native       ;; not currently implemented
+        !16 trap_dos_load_into_task           ;; not currently implemented
+        !16 trap_dos_create_task_c64          ;; not currently implemented
+        !16 trap_dos_create_task_c65          ;; not currently implemented
+        !16 trap_dos_exit_and_switch_to_task  ;; not currently implemented
+        !16 trap_dos_switch_to_task           ;; not currently implemented
+        !16 trap_dos_exit_task                ;; not currently implemented
 
         ;; $70 - $7E
         ;;
@@ -125,31 +125,31 @@ trap_serial_monitor_write:
 ;;         ========================
 
 trap_task_get_mapping:
-	jsr hypervisor_setup_copy_region
-	bcc @bad
-	ldy #5
+        jsr hypervisor_setup_copy_region
+        bcc @bad
+        ldy #5
 @copyloop:
-	lda hypervisor_maplohi,y
-	sta (<hypervisor_userspace_copy_vector),y
-	dey
-	bpl @copyloop
-	sec
+        lda hypervisor_maplohi,y
+        sta (<hypervisor_userspace_copy_vector),y
+        dey
+        bpl @copyloop
+        sec
 @bad:
-	jmp return_from_trap_with_carry_flag
+        jmp return_from_trap_with_carry_flag
 
 trap_task_set_mapping:
-	jsr hypervisor_setup_copy_region
-	bcc @bad2
-	ldy #5
+        jsr hypervisor_setup_copy_region
+        bcc @bad2
+        ldy #5
 @copyloop2:
-	lda (<hypervisor_userspace_copy_vector),y
-	sta hypervisor_maplohi,y
-	dey
-	bpl @copyloop2
-	sec
+        lda (<hypervisor_userspace_copy_vector),y
+        sta hypervisor_maplohi,y
+        dey
+        bpl @copyloop2
+        sec
 @bad2:
-	jmp return_from_trap_with_carry_flag
-	
+        jmp return_from_trap_with_carry_flag
+
 trap_task_toggle_force_4502:
         lda hypervisor_feature_enables
         eor #$20
@@ -209,10 +209,10 @@ trap_dos_closeall:
 ;;         ========================
 
 trap_dos_loadfile_attic:
-	lda #$08  		; Set address to $8xxxxxx to access attic RAM
-	!8 $2c 		; BIT $xxxx to skip lda #$00 below
-	;; FALL THROUGH
-	
+        lda #$08  		; Set address to $8xxxxxx to access attic RAM
+        !8 $2c 		; BIT $xxxx to skip lda #$00 below
+        ;; FALL THROUGH
+
 trap_dos_loadfile:
 
         ;; Only allow loading into lower 16MB to avoid possibility of writing
@@ -303,150 +303,150 @@ trap_dos_getcurrentdrive:
 
 trap_dos_mkfile:
 
-	;; XXX Filename must already be set.
-	;; XXX Must be a file in the current directory only.
-	;; XXX Can only create normal files, not directories
-	;;     (change attribute after).
-	;; XXX Only supports 8.3 names for now.
-	;; XXX Filenames without extension might still cause problems.
-	;; XXX Allocates 512KB at a time, i.e., a full FAT sector's
-	;;     worth of clusters.
-	;; XXX Allocates a contiguous block, so that D81s etc can
-	;;     be created, and guaranteed contiguous on the storage,
-	;;     so that they can be mounted.
-	;; XXX Size of file specified in $ZZYYXX, i.e., limit of 16MB.
-	;; XXX Doesn't handle full file systems (or ones without enough space
-	;;     free properly. Should check candidate cluster number is not too
-	;;     high, and abort if it is.
+        ;; XXX Filename must already be set.
+        ;; XXX Must be a file in the current directory only.
+        ;; XXX Can only create normal files, not directories
+        ;;     (change attribute after).
+        ;; XXX Only supports 8.3 names for now.
+        ;; XXX Filenames without extension might still cause problems.
+        ;; XXX Allocates 512KB at a time, i.e., a full FAT sector's
+        ;;     worth of clusters.
+        ;; XXX Allocates a contiguous block, so that D81s etc can
+        ;;     be created, and guaranteed contiguous on the storage,
+        ;;     so that they can be mounted.
+        ;; XXX Size of file specified in $ZZYYXX, i.e., limit of 16MB.
+        ;; XXX Doesn't handle full file systems (or ones without enough space
+        ;;     free properly. Should check candidate cluster number is not too
+        ;;     high, and abort if it is.
 
-	;; First, make sure the file doesn't already exist
-	jsr dos_findfile
-	bcc +
-	;; File exists, so abort
-	clc
-	lda #dos_errorcode_file_exists
-	sta dos_error_code
-	jmp return_from_trap_with_failure
+        ;; First, make sure the file doesn't already exist
+        jsr dos_findfile
+        bcc +
+        ;; File exists, so abort
+        clc
+        lda #dos_errorcode_file_exists
+        sta dos_error_code
+        jmp return_from_trap_with_failure
 +
 
-	;; We need 1 FAT sector per 512KB of data.
-	;; I.e., shift ZZ right by three bits to get number
-	;; of empty FAT sectors we need to indicate sufficient space.
-	lda hypervisor_z
-	lsr
-	lsr
-	lsr
-	clc
-	adc #$01 
-	sta dos_scratch_byte_1
+        ;; We need 1 FAT sector per 512KB of data.
+        ;; I.e., shift ZZ right by three bits to get number
+        ;; of empty FAT sectors we need to indicate sufficient space.
+        lda hypervisor_z
+        lsr
+        lsr
+        lsr
+        clc
+        adc #$01
+        sta dos_scratch_byte_1
 
-	;; Now go looking for empty FAT sectors
-	;; Start at cluster 128, and add 128 each time to step through
-	;; them.
-	;; This skips the first sector of FAT, which always has some used
-	;; bits, and ensures we can allocate on a whole sector basis.
-	lda #128
-	sta <(zptempv32+0)
-	lda #$00
-	sta <(zptempv32+1)
-	sta <(zptempv32+2)
-	sta <(zptempv32+3)
+        ;; Now go looking for empty FAT sectors
+        ;; Start at cluster 128, and add 128 each time to step through
+        ;; them.
+        ;; This skips the first sector of FAT, which always has some used
+        ;; bits, and ensures we can allocate on a whole sector basis.
+        lda #128
+        sta <(zptempv32+0)
+        lda #$00
+        sta <(zptempv32+1)
+        sta <(zptempv32+2)
+        sta <(zptempv32+3)
 
-	;; Initially 0 empty pages found
-	lda #0
-	sta dos_scratch_byte_2
+        ;; Initially 0 empty pages found
+        lda #0
+        sta dos_scratch_byte_2
 
-	jsr sd_map_sectorbuffer
+        jsr sd_map_sectorbuffer
 
 find_empty_fat_page_loop:
-	
-	ldx #3
+
+        ldx #3
 -	lda <zptempv32,x
-	sta dos_current_cluster,x
-	dex
-	bpl -
+        sta dos_current_cluster,x
+        dex
+        bpl -
 
-	jsr read_fat_sector_for_cluster
-	
-	;; Is the page empty
-	ldx #0
+        jsr read_fat_sector_for_cluster
+
+        ;; Is the page empty
+        ldx #0
 -	lda sd_sectorbuffer,x
-	bne +
-	lda sd_sectorbuffer+$100,x
-	bne +
+        bne +
+        lda sd_sectorbuffer+$100,x
+        bne +
 
-	inx
-	bne -
+        inx
+        bne -
 +
-	
-	;; Z=1 if FAT sector all unallocated, Z=0 otherwise
-	beq fat_sector_is_empty
 
-	;; Reset empty FAT sector counter
-	lda #0
-	sta dos_scratch_byte_2
-	jmp +
-	
-fat_sector_is_empty:	
-	inc dos_scratch_byte_2
-	lda dos_scratch_byte_2
-	cmp dos_scratch_byte_1
-	beq found_enough_contiguous_free_space
+        ;; Z=1 if FAT sector all unallocated, Z=0 otherwise
+        beq fat_sector_is_empty
+
+        ;; Reset empty FAT sector counter
+        lda #0
+        sta dos_scratch_byte_2
+        jmp +
+
+fat_sector_is_empty:
+        inc dos_scratch_byte_2
+        lda dos_scratch_byte_2
+        cmp dos_scratch_byte_1
+        beq found_enough_contiguous_free_space
 +
-	;; Need to find another
-	lda #$80
-	clc
-	adc <(zptempv32+0)
-	sta <(zptempv32+0)
-	lda <(zptempv32+1)
-	adc #0
-	sta <(zptempv32+1)
-	lda <(zptempv32+2)
-	adc #0
-	sta <(zptempv32+2)
-	lda <(zptempv32+3)
-	adc #0
-	sta <(zptempv32+3)
+        ;; Need to find another
+        lda #$80
+        clc
+        adc <(zptempv32+0)
+        sta <(zptempv32+0)
+        lda <(zptempv32+1)
+        adc #0
+        sta <(zptempv32+1)
+        lda <(zptempv32+2)
+        adc #0
+        sta <(zptempv32+2)
+        lda <(zptempv32+3)
+        adc #0
+        sta <(zptempv32+3)
 
-	;; XXX Check that we haven't hit the end of the file system
-	
-	jmp find_empty_fat_page_loop
+        ;; XXX Check that we haven't hit the end of the file system
+
+        jmp find_empty_fat_page_loop
 
 found_enough_contiguous_free_space:
 
-	;; Space begins dos_scratch_byte_2 FAT sectors before here,
-	;; so rewind back to there by taking $80 away for each count.
-	dec dos_scratch_byte_2
-	
+        ;; Space begins dos_scratch_byte_2 FAT sectors before here,
+        ;; so rewind back to there by taking $80 away for each count.
+        dec dos_scratch_byte_2
+
 -	lda dos_scratch_byte_2
-	beq +
-	lda <(zptempv32+0)
-	sec
-	sbc #$80
-	sta <(zptempv32+0)
-	lda <(zptempv32+1)
-	sbc #0
-	sta <(zptempv32+1)
-	lda <(zptempv32+2)
-	sbc #0
-	sta <(zptempv32+2)
-	lda <(zptempv32+3)
-	sbc #0
-	sta <(zptempv32+3)
-	dec dos_scratch_byte_2
-	jmp -
+        beq +
+        lda <(zptempv32+0)
+        sec
+        sbc #$80
+        sta <(zptempv32+0)
+        lda <(zptempv32+1)
+        sbc #0
+        sta <(zptempv32+1)
+        lda <(zptempv32+2)
+        sbc #0
+        sta <(zptempv32+2)
+        lda <(zptempv32+3)
+        sbc #0
+        sta <(zptempv32+3)
+        dec dos_scratch_byte_2
+        jmp -
 +
-	;; zptempv32 now contains the starting cluster for our file
+        ;; zptempv32 now contains the starting cluster for our file
 
-	;; Find directory entry slot
-	jsr dos_find_free_dirent
-	bcs +
-	;; Couldn't find a free dirent, so return whatever error
-	;; we have been indicated.
-	rts
+        ;; Find directory entry slot
+        jsr dos_find_free_dirent
+        bcs +
+        ;; Couldn't find a free dirent, so return whatever error
+        ;; we have been indicated.
+        rts
 +
 
-	;; Show offset in directory sector for dirent
+        ;; Show offset in directory sector for dirent
 ;;	lda dos_scratch_vector+0
 ;;	sta $0700
 ;;	lda dos_scratch_vector+1
@@ -466,253 +466,253 @@ found_enough_contiguous_free_space:
 ;;	sta $0708,x
 ;;	dex
 ;;	bpl !-
-	
-	;; XXX Populate dirent structure
-	;; dirent: erase old contents
-	ldy #31
-	lda #0
+
+        ;; XXX Populate dirent structure
+        ;; dirent: erase old contents
+        ldy #31
+        lda #0
 -	sta (<dos_scratch_vector),y
-	;; Put spaces in filename field (first 11 bytes)
-	cpy #11
-	bne foo1
-	lda #$20
-foo1:	
-	dey
-	bpl -
-	;; dirent: filename
-	;; Split filename at dot
-	ldy #0
-	ldx #fs_fat32_dirent_offset_shortname
+        ;; Put spaces in filename field (first 11 bytes)
+        cpy #11
+        bne foo1
+        lda #$20
+foo1:
+        dey
+        bpl -
+        ;; dirent: filename
+        ;; Split filename at dot
+        ldy #0
+        ldx #fs_fat32_dirent_offset_shortname
 -	lda dos_requested_filename,x
-	cmp #$2e
-	bne not_dot
-	ldy #8-1
-	bne was_dot
+        cmp #$2e
+        bne not_dot
+        ldy #8-1
+        bne was_dot
 not_dot:
-	;; Don't write nul char if filename is short
-	cmp #0
-	beq +
-	sta (<dos_scratch_vector),y
-was_dot:	
-	beq +
-	inx
-	iny
-	cpy #11
-	bne -
+        ;; Don't write nul char if filename is short
+        cmp #0
+        beq +
+        sta (<dos_scratch_vector),y
+was_dot:
+        beq +
+        inx
+        iny
+        cpy #11
+        bne -
 +
-	
-	;; dirent: attributes
-	ldy #fs_fat32_dirent_offset_attributes
-	lda #$20 ;; Archive bit set
-	sta (<dos_scratch_vector),y
-	;; dirent: start cluster
-	ldy #fs_fat32_dirent_offset_clusters_low
-	lda <(zptempv32+0)
-	sta (<dos_scratch_vector),y
-	iny
-	lda <(zptempv32+1)
-	sta (<dos_scratch_vector),y
-	ldy #fs_fat32_dirent_offset_clusters_high
-	lda <(zptempv32+2)
-	sta (<dos_scratch_vector),y
-	iny
-	lda <(zptempv32+3)
-	sta (<dos_scratch_vector),y	
-	;; dirent: file length
-	ldy #fs_fat32_dirent_offset_file_length
-	lda hypervisor_x
-	sta (<dos_scratch_vector),y
-	iny
-	lda hypervisor_y
-	sta (<dos_scratch_vector),y
-	iny
-	lda hypervisor_z
-	sta (<dos_scratch_vector),y
-	iny
-	lda #0
-	sta (<dos_scratch_vector),y
 
-	;; Write sector back with updated dirent
-	jsr write_non_mbr_sector
-	jsr sd_wait_for_ready
-		
-	;; Update both FATs to make the allocation
+        ;; dirent: attributes
+        ldy #fs_fat32_dirent_offset_attributes
+        lda #$20 ;; Archive bit set
+        sta (<dos_scratch_vector),y
+        ;; dirent: start cluster
+        ldy #fs_fat32_dirent_offset_clusters_low
+        lda <(zptempv32+0)
+        sta (<dos_scratch_vector),y
+        iny
+        lda <(zptempv32+1)
+        sta (<dos_scratch_vector),y
+        ldy #fs_fat32_dirent_offset_clusters_high
+        lda <(zptempv32+2)
+        sta (<dos_scratch_vector),y
+        iny
+        lda <(zptempv32+3)
+        sta (<dos_scratch_vector),y
+        ;; dirent: file length
+        ldy #fs_fat32_dirent_offset_file_length
+        lda hypervisor_x
+        sta (<dos_scratch_vector),y
+        iny
+        lda hypervisor_y
+        sta (<dos_scratch_vector),y
+        iny
+        lda hypervisor_z
+        sta (<dos_scratch_vector),y
+        iny
+        lda #0
+        sta (<dos_scratch_vector),y
 
-	;; Work out how many sectors full of incrementing clusters
-	;; we need.
-	lda dos_scratch_byte_1
-	sta dos_scratch_byte_2
-mkfile_fat_write_loop:	
-	;; Get the (currently empty) sector
-	ldx #3
+        ;; Write sector back with updated dirent
+        jsr write_non_mbr_sector
+        jsr sd_wait_for_ready
+
+        ;; Update both FATs to make the allocation
+
+        ;; Work out how many sectors full of incrementing clusters
+        ;; we need.
+        lda dos_scratch_byte_1
+        sta dos_scratch_byte_2
+mkfile_fat_write_loop:
+        ;; Get the (currently empty) sector
+        ldx #3
 -	lda <zptempv32,x
-	sta dos_current_cluster,x
-	dex
-	bpl -
-	jsr read_fat_sector_for_cluster
+        sta dos_current_cluster,x
+        dex
+        bpl -
+        jsr read_fat_sector_for_cluster
 
-	;; Update cluster number and write it into the field
-	ldy #0
+        ;; Update cluster number and write it into the field
+        ldy #0
 -
-	;; XXX Rework to use 32-bit pseudo register
-	lda <(zptempv32+0)
-	clc
-	adc #1
-	sta <(zptempv32+0)
-	sta sd_sectorbuffer,y
-	iny
-	lda <(zptempv32+1)
-	adc #0
-	sta <(zptempv32+1)
-	sta sd_sectorbuffer,y
-	iny
-	lda <(zptempv32+2)
-	adc #0
-	sta <(zptempv32+2)
-	sta sd_sectorbuffer,y
-	iny
-	lda <(zptempv32+3)
-	adc #0
-	sta <(zptempv32+3)
-	sta sd_sectorbuffer,y
-	iny
-	bne -
+        ;; XXX Rework to use 32-bit pseudo register
+        lda <(zptempv32+0)
+        clc
+        adc #1
+        sta <(zptempv32+0)
+        sta sd_sectorbuffer,y
+        iny
+        lda <(zptempv32+1)
+        adc #0
+        sta <(zptempv32+1)
+        sta sd_sectorbuffer,y
+        iny
+        lda <(zptempv32+2)
+        adc #0
+        sta <(zptempv32+2)
+        sta sd_sectorbuffer,y
+        iny
+        lda <(zptempv32+3)
+        adc #0
+        sta <(zptempv32+3)
+        sta sd_sectorbuffer,y
+        iny
+        bne -
 -
-	lda <(zptempv32+0)
-	clc
-	adc #1
-	sta <(zptempv32+0)
-	sta sd_sectorbuffer+$100,y
-	iny
-	lda <(zptempv32+1)
-	adc #0
-	sta <(zptempv32+1)
-	sta sd_sectorbuffer+$100,y
-	iny
-	lda <(zptempv32+2)
-	adc #0
-	sta <(zptempv32+2)
-	sta sd_sectorbuffer+$100,y
-	iny
-	lda <(zptempv32+3)
-	adc #0
-	sta <(zptempv32+3)
-	sta sd_sectorbuffer+$100,y
-	iny
-	bne -
+        lda <(zptempv32+0)
+        clc
+        adc #1
+        sta <(zptempv32+0)
+        sta sd_sectorbuffer+$100,y
+        iny
+        lda <(zptempv32+1)
+        adc #0
+        sta <(zptempv32+1)
+        sta sd_sectorbuffer+$100,y
+        iny
+        lda <(zptempv32+2)
+        adc #0
+        sta <(zptempv32+2)
+        sta sd_sectorbuffer+$100,y
+        iny
+        lda <(zptempv32+3)
+        adc #0
+        sta <(zptempv32+3)
+        sta sd_sectorbuffer+$100,y
+        iny
+        bne -
 
-	;; If the last FAT sector for this file, then
-	;; the last cluster entry should be $0FFFFFF8 to mark
-	;; end of file.
-	lda dos_scratch_byte_2
-	cmp #1
-	bne +
-	lda #$F8
-	sta $dffc
-	lda #$FF
-	sta $dffd
-	sta $dffe
-	lda #$0F
-	sta $dfff
-+	
-	;; Write FAT sector to FAT1
-	jsr write_non_mbr_sector
-	jsr sd_wait_for_ready
+        ;; If the last FAT sector for this file, then
+        ;; the last cluster entry should be $0FFFFFF8 to mark
+        ;; end of file.
+        lda dos_scratch_byte_2
+        cmp #1
+        bne +
+        lda #$F8
+        sta $dffc
+        lda #$FF
+        sta $dffd
+        sta $dffe
+        lda #$0F
+        sta $dfff
++
+        ;; Write FAT sector to FAT1
+        jsr write_non_mbr_sector
+        jsr sd_wait_for_ready
 
-	;; Work out where it will be in the 2nd FAT
-	lda dos_disk_table_offset
-	ora #fs_fat32_length_of_fat
-	tay
-	ldx #0
+        ;; Work out where it will be in the 2nd FAT
+        lda dos_disk_table_offset
+        ora #fs_fat32_length_of_fat
+        tay
+        ldx #0
 -	lda $d681,x
-	adc dos_disk_table,y
-	iny
-	inx
-	cpx #4
-	bne -
-	
-	;; Write FAT sector to FAT2
-	jsr write_non_mbr_sector
-	jsr sd_wait_for_ready
-	
-	;; More FAT sectors to go?
-	dec dos_scratch_byte_2
-	beq +
-	jmp mkfile_fat_write_loop
-+		
+        adc dos_disk_table,y
+        iny
+        inx
+        cpx #4
+        bne -
 
-	;; All done: File has been created.
-	jmp return_from_trap_with_success
+        ;; Write FAT sector to FAT2
+        jsr write_non_mbr_sector
+        jsr sd_wait_for_ready
+
+        ;; More FAT sectors to go?
+        dec dos_scratch_byte_2
+        beq +
+        jmp mkfile_fat_write_loop
++
+
+        ;; All done: File has been created.
+        jmp return_from_trap_with_success
 
 dos_find_free_dirent:
-	;; Start by opening the directory.
-	jsr dos_opendir
-	;; Then look for free directory entry slots.
-	jsr sd_map_sectorbuffer
+        ;; Start by opening the directory.
+        jsr dos_opendir
+        ;; Then look for free directory entry slots.
+        jsr sd_map_sectorbuffer
 
-	;; FALL THROUGH
-	
-empty_dirent_search_loop:	
-	
-	jsr dos_file_read_current_sector
+        ;; FALL THROUGH
 
-	;; Look for free dirent in first half of each sector.
-	ldx #0
-	lda #$de
-	sta <(dos_scratch_vector+1)
+empty_dirent_search_loop:
+
+        jsr dos_file_read_current_sector
+
+        ;; Look for free dirent in first half of each sector.
+        ldx #0
+        lda #$de
+        sta <(dos_scratch_vector+1)
 -	lda sd_sectorbuffer,x
-	cmp #$00 ;; vacant
-	beq available_dirent_slot
-	cmp #$e5 ;; deleted
-	beq available_dirent_slot
-	txa
-	adc #$20
-	tax
-	bne -
-	inc <(dos_scratch_vector+1)
+        cmp #$00 ;; vacant
+        beq available_dirent_slot
+        cmp #$e5 ;; deleted
+        beq available_dirent_slot
+        txa
+        adc #$20
+        tax
+        bne -
+        inc <(dos_scratch_vector+1)
 -	lda sd_sectorbuffer,x
-	cmp #$00 ;; vacant
-	beq available_dirent_slot
-	cmp #$e5 ;; deleted
-	beq available_dirent_slot
-	txa
-	adc #$20
-	tax
-	bne -
+        cmp #$00 ;; vacant
+        beq available_dirent_slot
+        cmp #$e5 ;; deleted
+        beq available_dirent_slot
+        txa
+        adc #$20
+        tax
+        bne -
 
-	;; No empty slots in this directory, so see if there any more sectors in
-	;; this directory?
-	jsr dos_file_advance_to_next_sector
-	bcs empty_dirent_search_loop
+        ;; No empty slots in this directory, so see if there any more sectors in
+        ;; this directory?
+        jsr dos_file_advance_to_next_sector
+        bcs empty_dirent_search_loop
 
-	;; Directory is full, so return error
-	;; XXX Later we should allow extending the directory by adding another cluster.
-	lda #dos_errorcode_directory_full
-	sta dos_error_code
-	clc
-	rts
-	
-available_dirent_slot:	
-	stx <(dos_scratch_vector+0)
-	
-	sec
-	rts
+        ;; Directory is full, so return error
+        ;; XXX Later we should allow extending the directory by adding another cluster.
+        lda #dos_errorcode_directory_full
+        sta dos_error_code
+        clc
+        rts
+
+available_dirent_slot:
+        stx <(dos_scratch_vector+0)
+
+        sec
+        rts
 
 ;;         ========================
-	
-read_fat_sector_for_cluster:
-	jsr dos_cluster_to_fat_sector
 
-	;; Now read the sector
+read_fat_sector_for_cluster:
+        jsr dos_cluster_to_fat_sector
+
+        ;; Now read the sector
         ldx #3
 -       lda dos_current_cluster,x
         sta $d681,x
         dex
         bpl -
-	jmp sd_readsector
-	
+        jmp sd_readsector
+
 ;;         ========================
-	
+
 trap_dos_opendir:
 
         ;; X = File descriptor
@@ -796,15 +796,28 @@ trap_dos_closedir:
 ;;         ========================
 
 trap_dos_readfile:
-	jsr dos_readfile	
+        jsr dos_readfile
         jmp return_from_trap_with_carry_flag
 
+trap_dos_writefile:
+        jsr dos_writefile
+        jmp return_from_trap_with_carry_flag
+
+trap_dos_rmfile:
+        jsr dos_rmfile
+        jmp return_from_trap_with_carry_flag
+
+trap_dos_fstat:
+        jsr dos_fstat
+        jmp return_from_trap_with_carry_flag
+
+;;         ========================
 
 trap_dos_cdrootdir:
-	ldx hypervisor_x
-	jsr dos_cdroot
-	jmp return_from_trap_with_carry_flag
-	
+        ldx hypervisor_x
+        jsr dos_cdroot
+        jmp return_from_trap_with_carry_flag
+
 trap_dos_chdir:
 
         ;; Opens file in current dirent structure
@@ -826,7 +839,7 @@ tdcd1:
 
 ;;         ========================
 
-	
+
 trap_dos_openfile:
 
         ;; Opens file in current dirent structure
@@ -919,7 +932,8 @@ trap_dos_d81attach0:
 
         +Checkpoint "trap_dos_d81attach0"
 
-        jsr dos_d81attach0
+        ldx #$00
+        jsr dos_attach
         jmp return_from_trap_with_carry_flag
 
 ;;         ========================
@@ -928,16 +942,31 @@ trap_dos_d81attach1:
 
         +Checkpoint "trap_dos_d81attach1"
 
-        jsr dos_d81attach1
+        ldx #$01
+        jsr dos_attach
         jmp return_from_trap_with_carry_flag
 
 ;;         ========================
 
 trap_dos_d81detach:
 
-        jsr dos_d81detach
+        +Checkpoint "trap_dos_d81detach"
 
-        jmp return_from_trap_with_success
+        ldx #%11000010          ;; detach both drives, don't attach real drives
+        jsr dos_attach
+
+        jmp return_from_trap_with_carry_flag
+
+;;         ========================
+
+trap_dos_attach:
+
+        +Checkpoint "trap_dos_attach"
+
+        ldx hypervisor_x
+        jsr dos_attach
+
+        jmp return_from_trap_with_carry_flag
 
 ;;         ========================
 
@@ -995,10 +1024,7 @@ trap_dos_getdisksize:
 trap_dos_getcwd:
 trap_dos_mkdir:
 trap_dos_rmdir:
-trap_dos_writefile:
 trap_dos_seekfile:
-trap_dos_rmfile:
-trap_dos_fstat:
 trap_dos_rename:
 trap_dos_filedate:
 trap_dos_gettasklist:
@@ -1038,12 +1064,12 @@ dos_clear_filedescriptors:
         sta currenttask_filedescriptor2
         sta currenttask_filedescriptor3
 
-	;; XXX - Doesn't flush any files open for write
+        ;; XXX - Doesn't flush any files open for write
         sta dos_file_descriptors
         sta dos_file_descriptors+$10
         sta dos_file_descriptors+$20
         sta dos_file_descriptors+$30
-	
+
         sec
         rts
 
@@ -1169,7 +1195,7 @@ dos_initialise_disklist:
 ;;         ========================
 
 dos_consider_partition_entry:
-	
+
         lda #$00
         sta dos_error_code
 
@@ -1908,7 +1934,7 @@ dos_return_error_already_set:
 ;;         ========================
 
 dos_set_current_disk:
-	
+
         ;; Is disk number valid?
         ;;
         ;; INPUT: .X = disk
@@ -1919,9 +1945,9 @@ dos_set_current_disk:
 
         lda #dos_errorcode_no_such_disk
         sta dos_error_code
-	clc
-	rts
-	
+        clc
+        rts
+
 +
         stx dos_disk_current_disk
         txa
@@ -1962,15 +1988,15 @@ dos_cdroot:
         jsr dos_set_current_disk
         bcs dos_cdroot_current_disk_already_set
 
-	;; Could not set disk. Error will be already set
-	clc
-	rts	
+        ;; Could not set disk. Error will be already set
+        clc
+        rts
 
 dos_cdroot_current_disk_already_set:
 
         ;; get offset of disk entry
         ;;
-	
+
         ldx dos_disk_table_offset
         lda dos_disk_table + fs_fat32_root_dir_cluster +0,x
         sta dos_disk_cwd_cluster
@@ -2168,8 +2194,8 @@ dcf_simple:
 ;;         ========================
 
 dos_chdir:
-	;; Works similarly to dos_openfile, i.e. you must first have the
-	;; directory in the dirent structure, found via dos_findfile
+        ;; Works similarly to dos_openfile, i.e. you must first have the
+        ;; directory in the dirent structure, found via dos_findfile
 
         ;; Check if the file is a directory, if so, refuse to open it.
         ;;
@@ -2179,7 +2205,7 @@ dos_chdir:
 
         lda #dos_errorcode_not_a_directory
         jmp dos_return_error
-	
+
 ;;         ========================
 
 dcd_is_a_directory:
@@ -2187,40 +2213,40 @@ dcd_is_a_directory:
         jsr dos_set_current_file_from_dirent
         bcc l3_dos_return_error_already_set
 
-	;; Close the file descriptor opened by dos_set_current_file_from_dirent
-	jsr dos_closefile
+        ;; Close the file descriptor opened by dos_set_current_file_from_dirent
+        jsr dos_closefile
 
-	;; Copy cluster of requesteed directory into disk CWD cluster
-	ldx #3
+        ;; Copy cluster of requesteed directory into disk CWD cluster
+        ldx #3
 dcd1:	lda dos_dirent_cluster,x
-	sta dos_disk_cwd_cluster,x
-	dex
-	bpl dcd1
+        sta dos_disk_cwd_cluster,x
+        dex
+        bpl dcd1
 
-	;; Check if cluster 0. If so, cd to root directory
-	;; (its a convention to put cluster 0 in references to the root directory
-	;; on some FAT implementations, apparently).
-	
-	ldx #3
-	lda #0
+        ;; Check if cluster 0. If so, cd to root directory
+        ;; (its a convention to put cluster 0 in references to the root directory
+        ;; on some FAT implementations, apparently).
+
+        ldx #3
+        lda #0
 dcd2:	ora dos_disk_cwd_cluster,x
-	dex
-	bpl dcd2
+        dex
+        bpl dcd2
 
-	cmp #0
-	bne @nonZeroCluster
+        cmp #0
+        bne @nonZeroCluster
 
-	;; Is cluster 0, so change to root directory
-	jmp dos_cdroot_current_disk_already_set
-	
+        ;; Is cluster 0, so change to root directory
+        jmp dos_cdroot_current_disk_already_set
+
 @nonZeroCluster:
-	;; Return success
-	sec
-	rts
+        ;; Return success
+        sec
+        rts
 
 ;;         ========================
-	
-	
+
+
 dos_openfile:
 
         ;; Open the file that is in the dirent structure
@@ -2283,7 +2309,7 @@ l3_dos_return_error_already_set:
 +
         ;; Directory is now open, and we can now iterate through directory entries
         ;;
-	jmp dos_findnext
+        jmp dos_findnext
 
 
 ;;         ========================
@@ -2376,6 +2402,30 @@ dff1:   lda dos_disk_cwd_cluster,x
 
 ;;         ========================
 
+dos_readdir_storecurrententry
+        ;; store current cluster/sector/offset to rewind to later for rmfile
+        ldy #$00
+        ldx dos_current_file_descriptor_offset
+-       lda dos_file_descriptors + dos_filedescriptor_offset_currentcluster,x
+        sta dos_direntstart_cluster,y
+        inx
+        iny
+        cpy #$07
+        bne -
+        rts
+
+dos_readdir_retreivelastentry
+        ;; retrieve current cluster/sector/offset to for rmfile
+        ldy #$00
+        ldx dos_current_file_descriptor_offset
+-       lda dos_direntstart_cluster,y
+        sta dos_file_descriptors + dos_filedescriptor_offset_currentcluster,x
+        inx
+        iny
+        cpy #$07
+        bne -
+        rts
+
 dos_readdir:
 
         ;; Get the current file entry, and advance pointer
@@ -2459,7 +2509,6 @@ drd_notadir:
 ;;         ========================
 
 drd_isdir:
-
         ;; Clear dirent structure
         ;; WARNING - Uses carnal knowledge to know that dirent structure is
         ;; 64+1+11+4+4+1 = 85 contiguous bytes
@@ -2548,7 +2597,7 @@ eight3char1:
 ;;         ========================
 
         ;; first, check if the entry begins with $E5 marking a deleted file.
-	;; Entry entries we just ignore, as they are totally valid.
+        ;; Entry entries we just ignore, as they are totally valid.
 
         ldy #fs_fat32_dirent_offset_shortname        ;; Y=0 (first char of entry)
         lda (<dos_scratch_vector),y
@@ -2556,10 +2605,10 @@ eight3char1:
         bne +
         jmp drd_deleted_or_invalid_entry
 +
-	cmp #$00  ;; NOTE: In Windows, I've seen #$00 markers equating to the end of direntries (i.e., stop iterating over direntries at this point)
+        cmp #$00  ;; NOTE: In Windows, I've seen #$00 markers equating to the end of direntries (i.e., stop iterating over direntries at this point)
         bne +
-	;; Empty entry, so skip over it
-	jmp drd_deleted_or_invalid_entry
+        ;; Empty entry, so skip over it
+        jmp drd_deleted_or_invalid_entry
 +
         ;; now check the attrib
 
@@ -2593,7 +2642,7 @@ drce_cont0:
         and #$08
         cmp #$08                ;; %00001000 Vol-ID
         bne drce_cont2
-	jmp drce_cont_next_part	; Ignore it
+        jmp drce_cont_next_part	; Ignore it
 
 drce_cont2:
         tya        ;; from safe keeping
@@ -2622,9 +2671,9 @@ drce_cont3:
         jmp drce_normalrecord
 
 drce_ignore:
-	;; Ignore hidden/system files for now
-	;; XXX We should have a flag to enable/disable this behaviour
-	jmp drce_cont_next_part
+        ;; Ignore hidden/system files for now
+        ;; XXX We should have a flag to enable/disable this behaviour
+        jmp drce_cont_next_part
 
 dotdotshortname:
         !text "..         "
@@ -2633,9 +2682,9 @@ dotdotshortname:
 
 drce_longname:
 
-disable_lfn_byte:	
-	jmp drce_cont_next_part
-	
+disable_lfn_byte:
+        jmp drce_cont_next_part
+
         ;; make sure long entry type is "filename" (=$00)
         ;;
         ldy #fs_fat32_dirent_offset_lfn_type
@@ -2816,6 +2865,8 @@ drce_cont_next_part:
 drce_normalrecord:
         ;; PGS: We have found a short name.
 
+        ;; start of short filename. store entry for use by fstat and rmfile
+        jsr dos_readdir_storecurrententry
 
         +Checkpoint "processing SHORT-name"
 
@@ -2889,36 +2940,36 @@ drce6:  lda (<dos_scratch_vector),y
         bne drce6
 
 drce_copied_extension:
-	
-	;; Trim spaces from the end of the filename
-	cpx #0
-	beq @filename0bytes
-	lda #$20
-	cmp dos_dirent_longfilename-1,x
-	bne @nomorespaces
-	dex
-	jmp drce_copied_extension
-	
+
+        ;; Trim spaces from the end of the filename
+        cpx #0
+        beq @filename0bytes
+        lda #$20
+        cmp dos_dirent_longfilename-1,x
+        bne @nomorespaces
+        dex
+        jmp drce_copied_extension
+
 @nomorespaces:
 
-	;; And trim trailing . from file name in case extension
-	;; was all spaces. But don't trim it if the filename starts
-	;; with ., so that we don't mess up . and .. directories
-	lda dos_dirent_longfilename-1,x
-	;; Is last char a . ?
-	cmp #$2e
-	bne @notrailingdot
+        ;; And trim trailing . from file name in case extension
+        ;; was all spaces. But don't trim it if the filename starts
+        ;; with ., so that we don't mess up . and .. directories
+        lda dos_dirent_longfilename-1,x
+        ;; Is last char a . ?
+        cmp #$2e
+        bne @notrailingdot
 
 @hastrailingdot:
-	
-	;; Cut . from end of filename
-	dex
+
+        ;; Cut . from end of filename
+        dex
 
 @notrailingdot:
-	
+
 @filename0bytes:
 
-	;; null terminate short name for convenience in our debugging
+        ;; null terminate short name for convenience in our debugging
         ;;
         lda #$00
         sta dos_dirent_longfilename,x
@@ -3069,7 +3120,7 @@ drd_deleted_or_invalid_entry:
 ddie:   !text "xx drd_deleted_or_invalid_entry"
         !8 0
 }
-	
+
         jsr dos_readdir_advance_to_next_entry
         bcc +
         jmp dos_readdir
@@ -3222,7 +3273,7 @@ dscffd1:
         sta dos_bytes_remaining,x
         dex
         bpl -
-	
+
         sec
         rts
 
@@ -3309,7 +3360,21 @@ dfrcs1: lda dos_file_descriptors+dos_filedescriptor_offset_currentcluster,x
 
 dos_file_read_current_sector:
 
-        jsr dos_get_file_descriptor_offset
+        jsr dos_file_update_sector_offset
+        jmp sd_readsector
+
+;;         ========================
+
+dos_file_write_current_sector:
+
+        jsr dos_file_update_sector_offset
+        jmp sd_writesector
+
+;;         ========================
+
+dos_file_update_sector_offset:
+
+       jsr dos_get_file_descriptor_offset
         jsr dos_set_current_cluster_from_file
         jsr dos_cluster_to_sector
 
@@ -3337,7 +3402,7 @@ gotFDOffset:
         ;;
         jsr sdsector_add_uint8
 
-        jmp sd_readsector
+        rts
 
 ;;         ========================
 
@@ -3410,8 +3475,8 @@ dfanc1:
 
         jsr dos_cluster_to_fat_sector
 
-	jsr dos_remember_sd_sector
-	
+        jsr dos_remember_sd_sector
+
         ;; copy from current cluster to SD sector address register
         ;;
         ldx #$03
@@ -3533,37 +3598,37 @@ dfanc_check:
 
 dfanc_ok:
         ;; cluster number is okay
-	jsr dos_restore_sd_sector
+        jsr dos_restore_sd_sector
         sec
         rts
 
 dfanc_fail:
-	jsr dos_restore_sd_sector
+        jsr dos_restore_sd_sector
         lda #dos_errorcode_invalid_cluster
         jmp dos_return_error
 
-	;; Some routines disturb the current SD card sector in the buffer,
-	;; but where the caller might not expect or want this to happen.
-	;; For this reason we have the following convenience routines for
-	;; stashing and restoring the current ready sector.
+        ;; Some routines disturb the current SD card sector in the buffer,
+        ;; but where the caller might not expect or want this to happen.
+        ;; For this reason we have the following convenience routines for
+        ;; stashing and restoring the current ready sector.
 dos_remember_sd_sector:
-	ldx #3
+        ldx #3
 -	lda $d681,x
-	sta dos_stashed_sd_sector_number,x
-	dex
-	bpl -
-	rts
+        sta dos_stashed_sd_sector_number,x
+        dex
+        bpl -
+        rts
 
 dos_restore_sd_sector:
-	ldx #3
+        ldx #3
 -	lda dos_stashed_sd_sector_number,x
-	sta $d681,x
-	dex
-	bpl -
-	jsr sd_readsector
-	rts
-	
-	
+        sta $d681,x
+        dex
+        bpl -
+        jsr sd_readsector
+        rts
+
+
 ;;         ========================
 
 dos_cluster_to_fat_sector:
@@ -3788,10 +3853,9 @@ dos_load_y_based_on_dos_bytes_remaining:
         sta dos_bytes_remaining+3
         rts
 
+dos_updatereturnsize:
 
-dos_readfile:
-
-;; 	ldx dos_bytes_remaining+3 
+;; 	ldx dos_bytes_remaining+3
 ;; 	jsr checkpoint_bytetohex
 ;; 	sty lenhex+0
 ;; 	stx lenhex+1
@@ -3807,87 +3871,357 @@ dos_readfile:
 ;; 	jsr checkpoint_bytetohex
 ;; 	sty lenhex+6
 ;; 	stx lenhex+7
-	
+
 ;; 	jsr checkpoint
 ;; 	!8 0
 ;; 	ascii("$")
-;; lenhex:	
+;; lenhex:
 ;; 	ascii("%%%%%%%% bytes remaining.")
 ;; 	!8 0
-	
-	lda dos_bytes_remaining+0
-	ora dos_bytes_remaining+1
-	ora dos_bytes_remaining+2
-	ora dos_bytes_remaining+3
-	bne +
 
-	;; End of file: So zero bytes returned
-	lda #$00
-	sta hypervisor_x
-	sta hypervisor_y
-	clc
-	rts
-	
+        lda dos_bytes_remaining+0
+        ora dos_bytes_remaining+1
+        ora dos_bytes_remaining+2
+        ora dos_bytes_remaining+3
+        bne +
+
+        ;; End of file: So zero bytes returned
+        lda #$00
+        sta hypervisor_x
+        sta hypervisor_y
+        clc
+        rts
+
 +
-	;; Indicate how many bytes we are returning
-	ldx #<$0200
-	ldy #>$0200
-	
-	lda dos_bytes_remaining+2
-	ora dos_bytes_remaining+3
-	bne +   ;; lots more to read
-	lda dos_bytes_remaining+1
-	cmp #2
-	bcs +   ;; at least a whole sector more to read
+        ;; Indicate how many bytes we are returning
+        ldx #<$0200
+        ldy #>$0200
 
-	;; Only a fractional part of a sector to read, so zero out remaining
+        lda dos_bytes_remaining+2
+        ora dos_bytes_remaining+3
+        bne +   ;; lots more to read
+        lda dos_bytes_remaining+1
+        cmp #2
+        bcs +   ;; at least a whole sector more to read
 
-	;; Update number of bytes for fractional sector read
-	ldx dos_bytes_remaining+0
-	ldy dos_bytes_remaining+1
-	
-	lda #$00
-	sta dos_bytes_remaining+0
-	;; Actually make it look like 1 sector to go, so we decrement that to zero
-	;; immediately below
-	lda #$02
-	sta dos_bytes_remaining+1
-	;; FALL THROUGH
+        ;; Only a fractional part of a sector to read, so zero out remaining
+
+        ;; Update number of bytes for fractional sector read
+        ldx dos_bytes_remaining+0
+        ldy dos_bytes_remaining+1
+
+        lda #$00
+        sta dos_bytes_remaining+0
+        ;; Actually make it look like 1 sector to go, so we decrement that to zero
+        ;; immediately below
+        lda #$02
+        sta dos_bytes_remaining+1
+        ;; FALL THROUGH
 +
-	
-	;; Deduct one sector from the remaining
-	lda dos_bytes_remaining+1
-	sec
-	sbc #2
-	sta dos_bytes_remaining+1
-	lda dos_bytes_remaining+2
-	sbc #0
-	sta dos_bytes_remaining+2
-	lda dos_bytes_remaining+3
-	sbc #0
-	sta dos_bytes_remaining+3
 
-	;; Store number of bytes read in X and Y for calling process
-	stx hypervisor_x
-	sty hypervisor_y
-	
-	;; Now read sector and return
-	
+        ;; Deduct one sector from the remaining
+        lda dos_bytes_remaining+1
+        sec
+        sbc #2
+        sta dos_bytes_remaining+1
+        lda dos_bytes_remaining+2
+        sbc #0
+        sta dos_bytes_remaining+2
+        lda dos_bytes_remaining+3
+        sbc #0
+        sta dos_bytes_remaining+3
+
+        ;; Store number of bytes read in X and Y for calling process
+        stx hypervisor_x
+        sty hypervisor_y
+
+        jsr sd_map_sectorbuffer
+
+        rts
+
+dos_readfile:
+
+        jsr dos_updatereturnsize
+        bcs +
+        rts
+
++	;; Now read sector and return
+        jsr dos_file_read_current_sector
+        bcs drwf_readwritesuccess
+        rts
+
+;;         ========================
+
+dos_writefile:
+
+        jsr dos_updatereturnsize
+        bcs +
+        rts
+
++	;; Now write sector and return
+        jsr dos_file_write_current_sector
+        bcs drwf_readwritesuccess
+        rts
+
+drwf_readwritesuccess:
+        jsr dos_file_advance_to_next_sector
+
+        sec
+        rts
+
+;;         ========================
+
+dos_rmfile:
+        jsr dos_readdir_retreivelastentry
         jsr sd_map_sectorbuffer
         jsr dos_file_read_current_sector
-        bcs drf_gotsector
-	rts
-	
-drf_gotsector:
-	;; Then advance to next sector.
-	;; Ignore the error, as the EOF will get picked up on the next call.
 
-	jsr dos_file_advance_to_next_sector
+        lda dos_direntstart_offsetinsector+0
+        sta <(dos_scratch_vector+0)
+        lda dos_direntstart_offsetinsector+1
+        clc
+        adc #$de   ;; high byte of SD card sector buffer
+        sta <(dos_scratch_vector+1)
 
-	sec
-	rts
-	
-	
+        ldy #$00
+        lda #$e5
+        sta (<dos_scratch_vector),y
+
+        jsr write_non_mbr_sector
+        jsr sd_wait_for_ready
+
+        ;; Work out where it will be in the 2nd FAT
+        lda dos_disk_table_offset
+        ora #fs_fat32_length_of_fat
+        tay
+        ldx #0
+-       lda $d681,x
+        adc dos_disk_table,y
+        iny
+        inx
+        cpx #4
+        bne -
+
+        ;; Write FAT sector to FAT2
+        jsr write_non_mbr_sector
+        jsr sd_wait_for_ready
+
+        ldx #$03
+-       lda dos_dirent_cluster+0,x
+        sta dos_current_cluster+0,x
+        dex
+        bpl -
+
+        ; start clearing fat entries until eof or fail
+-       jsr dos_rmfile_rmchainentry
+        bcc +
+        jmp -
+
++       sec
+        rts
+
+dos_rmfile_rmchainentry:
+
+        ;; Remember low byte of cluster number so that we can pull the
+        ;; cluster number for the next cluster out of the FAT sector
+        lda dos_current_cluster
+        sta dos_scratch_byte_1
+
+        jsr dos_cluster_to_fat_sector
+
+        ;; copy from current cluster to SD sector address register
+        ldx #$03
+        php
+drf2:   lda dos_current_cluster,x
+        sta $d681,x
+        dex
+        bpl drf2
+
+drf3:   plp
+        lda dos_current_cluster,x
+        adc #$00                                ; carry (set/cleared at end of dos_cluster_to_fat_sector)
+        sta dos_current_cluster,x
+        php
+        inx
+        cpx #$04
+        bne drf3
+
+        plp
+
+        ;; read FAT sector
+        jsr sd_readsector
+        bcs +
+        jmp dos_return_error_already_set
+
++       jsr sd_map_sectorbuffer
+
+        ;; now read the right four bytes out.
+        ;; cluster number needs to be shifted left 2 bits.
+        ;; we only need the lowest order byte.
+        ;; Get low byte of old cluster number from dos_scratch_byte_1
+        ;; where we put it.
+        lda dos_scratch_byte_1          ; 63 entries in half of fat sector = 111111
+        asl
+        asl
+        tax                             ; we've multiplied by 2 and gotten rid of the high sector bit ($40)
+
+        ;; get offset to current cluster field in current file descriptor ...
+        lda dos_current_file_descriptor_offset
+        ora #dos_filedescriptor_offset_currentcluster
+        tay
+
+        ;; ... and keep it handy, because we will need it a few times
+        sty dos_scratch_byte_2
+
+        ;; get offset of current cluster number field in file descriptor
+        ;; so that we can write the new cluster number in there.
+        ldy dos_scratch_byte_2
+
+        ldz #$00
+        lda dos_scratch_byte_1
+        and #$40
+        bne drf_high
+
+drf_low:
+        lda sd_sectorbuffer,x
+        sta dos_file_descriptors,y
+        sta $1800,y
+        inx
+        iny
+        inz
+        cpz #$04
+        bne drf_low
+        bra drf_check
+
+drf_high:
+        lda sd_sectorbuffer+$100,x
+        sta dos_file_descriptors,y
+        inx
+        iny
+        inz
+        cpz #$04
+        bne drf_high
+
+drf_check:
+        ;; get current cluster field address again
+        ldy dos_scratch_byte_2
+
+        ;; First, only the lower 28-bits are valid
+        lda dos_file_descriptors+3,y
+        and #$0f
+        sta dos_file_descriptors+3,y
+
+        ;; Now check for special values:
+        ;; cluster 0 is invalid (can this ever happen in a cluster chain?)
+        lda dos_file_descriptors+3,y
+        ora dos_file_descriptors+2,y
+        ora dos_file_descriptors+1,y
+        ora dos_file_descriptors,y
+        cmp #$00
+        beq drf_fail
+
+        ;; $?FFFFFF7 = bad cluster
+        ;; $?FFFFFF8-$?FFFFFFF = end of file
+        ;; (we'll treat anything from $FFFFFF0-F as eof/bad/invalid for simplicity)
+        lda dos_file_descriptors+3,y
+        cmp #$0f
+        bne drf_ok                              ; not $0f -> regular data file
+        lda dos_file_descriptors+2,y
+        and dos_file_descriptors+1,y
+        cmp #$ff
+        bne drf_ok                              ; not $ffff -> regular data file
+        lda dos_file_descriptors,y
+        and #$f0
+        cmp #$f0
+        beq drf_eof                             ; $0ffffff? -> eof marker
+
+drf_ok:
+        jsr drf_clearwriteandincreasesector
+        sec
+        rts
+
+drf_eof:
+        jsr drf_clearwriteandincreasesector
+        clc
+        rts
+
+drf_fail:
+        clc
+        rts
+
+drf_clearwriteandincreasesector
+        lda dos_scratch_byte_1
+        asl
+        asl
+        tax
+
+        ldz #$00
+        lda dos_scratch_byte_1
+        and #$40
+        bne drf_ok_clearinhighsector
+
+drf_ok_clearinlowsector:
+        lda #$00
+-       sta sd_sectorbuffer,x
+        inx
+        inz
+        cpz #$04
+        bne -
+        bra drf_ok_cleardone
+
+drf_ok_clearinhighsector:
+        lda #$00
+-       sta sd_sectorbuffer+$100,x
+        inx
+        inz
+        cpz #$04
+        bne -
+
+drf_ok_cleardone:
+        jsr sd_writesector
+        lda dos_file_descriptors+0,y
+        sta dos_current_cluster+0
+        lda dos_file_descriptors+1,y
+        sta dos_current_cluster+1
+        lda dos_file_descriptors+2,y
+        sta dos_current_cluster+2
+        lda dos_file_descriptors+3,y
+        sta dos_current_cluster+3
+        rts
+
+;;         ========================
+
+dos_fstat
+
+        ;; rewind to start of directory entry
+        jsr dos_readdir_retreivelastentry
+        jsr sd_map_sectorbuffer
+        jsr dos_file_read_current_sector
+
+        ldy #32
+        lda dos_current_file_descriptor_offset
+        ora #dos_filedescriptor_offset_offsetinsector
+        tax
+        lda dos_file_descriptors,x
+        sta (<hypervisor_userspace_copy_vector),y       ; write directory entry offset to userland+32
+        sta <dos_scratch_vector
+        lda dos_file_descriptors+1,x
+        iny
+        sta (<hypervisor_userspace_copy_vector),y       ; write directory entry offset to userland+33
+        clc
+        adc #$de   ;; high byte of SD card sector buffer
+        sta <(dos_scratch_vector+1)
+
+        ldy #0                                       ;; copy first 32 bytes of directory entry to userland+0
+tdfs:   lda (<dos_scratch_vector),y
+        sta (<hypervisor_userspace_copy_vector),y
+        iny
+        cpy #32
+        bne tdfs
+
+        sec
+        rts
+
 ;;         ========================
 
 dos_setname:
@@ -3921,115 +4255,200 @@ dsn_eon:
 
 ;;         ========================
 
-dos_d81detach:
-	;; Detaches both drive 0 and drive 1
-	
-        lda #$00
-        sta $d68b		; clear mount, d81/d65 flags
-	sta $d68a 		; clear d64/d71 flags
+        ;; Flags lookup tables
+        ;; drive 0    drive 1    drive 0+1  drive 0+1
+dos_attach_imgena_bits          ;; $d68b
+        !8 %00000111, %00111000, %00111111, %00111111
+dos_attach_typeflg_bits         ;; $d68b/a
+        !8 %01000000, %10000000, %11000000, %11000000
+dos_attach_realdrv_bits         ;; $d6a1
+        !8 %00000001, %00000100, %00000101, %00000101
 
-        ;; Mark it as unmounted (but preserve other flags for remounting, e.g., if it should be write-enabled)
-        lda #d81_image_flag_mounted
+dos_attach:
+        ;; NEW CALL DOS 1.3
+        ;;
+        ;; handles both attaching and detaching images and real drives
+        ;;
+        ;; X.0 - DRVNUM  select drive 0 or 1
+        ;; X.1 - BOTHDRV (MODE=detach) selects both drives
+        ;; X.6 - NOREAL  (MODE=detach) don't attach real drive if set
+        ;; X.7 - MODE    select mode 0 - attach, 1 - detach
+
+        ;; set the attach bits according to the selected drives
+        txa
+        bmi @detach_multi_drive ;; only detach supports both drives at once
+        and #$01                ;; limit to 1
+@detach_multi_drive:
+        and #$03                ;; limit to 3
+        tay                     ;; offset into dos_attach_*_bits tables
+
+        txa                     ;; sets N and Z flags
+        bpl dos_diskattach      ;; bit 7 not set (N flag), so we want to attach
+
+        ;; now we detach the drives
+        lda dos_attach_typeflg_bits,y
+        trb $d68a               ;; clear d64/d71 flags
+        ora dos_attach_imgena_bits,y
+        trb $d68b		;; clear mount, d81/d65 flags
+
+        txa
+        bit #$40
+        bne @attach_detach_proc
+        lda dos_attach_realdrv_bits,y
+        tsb $d6a1               ;; enable real drives
+
+@attach_detach_proc:
+        txa
+        and #$03
+        tax
+        ;; mark currenttask images as unmounted
+        lda #(d81_image_flag_mounted | d81_image_flag_write_en)
+        cpx #$02
+        bcs @attach_detach_both
+        cmp #$00
+        bne @attach_detach_1
         trb currenttask_d81_image0_flags
+        bra @attach_detach_done
+@attach_detach_both:
+        trb currenttask_d81_image0_flags
+@attach_detach_1:
         trb currenttask_d81_image1_flags
+@attach_detach_done:
 
-        ;; But we leave the file name there, in case someone wants to re-mount the image.
-        ;; This is exactly what happens when a process is unfrozen: dos_d81detach is called,
-        ;; followed by dos_d81attach, after first retrieving the filename
-        sec
-        rts
+        jmp dos_return_success
 
-dos_d81attach0:
-
-	;;  Always works on drive 0
-	
+dos_diskattach:
+        ;; dos_attach_bits determines on which drive it works
+        ;;
         ;; Assumes only that D81 file name has been set with dos_setname.
         ;;
-        jsr dos_findfile
-        bcs d81a1
+        sty <dos_attach_offset  ;; save Y offset into dos_attach_*_bits
 
-        lda #dos_errorcode_file_not_found
-        clc
-        rts
+        ;; Check if the filename of the disk image is too long
+        ldx dos_requested_filename_len
+        cpx #d81_image_max_namelen
+        bcc @d81lenok
+        lda #dos_errorcode_name_too_long
+        jmp dos_return_error
+
+@d81lenok
+        jsr dos_findfile
+        bcs @d81a1
+
+        ;; dos_findfile sets the error
+        jmp dos_return_error_already_set
 
 ;;         ========================
 
-d81a1:  ;; Why do we call closefile here?
+@d81a1:
+        ;; Why do we call closefile here?
         ;; -> because dos_findfile/first only closes on file_not_found
         jsr dos_closefile
 
-        jsr dos_d81check
-        bcs d81a1a
-        rts
-d81a1a:	
+        jsr dos_checkimage
+        bcs @d81a1a
+        jmp dos_return_error_already_set
 
-        ;; copy sector number from $D681 to $D68c
+@d81a1a:
+        ;; copy sector number from $D681 to DxSTARTSEC (D68C or D690)
         ;;
+        ldz #$03                ;; disk 0 is D68C-D68F
+        lda <dos_attach_offset  ;; fetch disk offset
+        beq @attach_disk_0
+        ldz #$07                ;; disk 1 is D690-D693
+
+        lda #%00000001
+        bit $d68b               ;; check if disk 0 is image
+        beq @attach_copy_sector ;; no image -> proceed
+        bra @attach_check_double
+
+@attach_disk_0:
+        lda #%00001000
+        bit $d68b               ;; check if disk 1 is image
+        beq @attach_copy_sector ;; no image -> proceed
+
+@attach_check_double
+        tza
+        eor #$04
+        tay
         ldx #$03
-l94d:   lda $d681,x		;; resolved sector number
-        sta $d68c,x  		;; sector number of disk image #0
+-       lda $d681,x		;; resolved sector number
+        cmp $d68c,y  		;; sector number of disk image
+        bne @attach_copy_sector
+        dey
         dex
-        bpl l94d
-	
-        ;; disable real floppy 0
-        lda $d6a1
-        and #$fe
-        sta $d6a1
-        
+        bpl -
+
+        ;; same sector number, error out
+        lda #dos_errorcode_double_attach
+        jmp dos_return_error
+
+@attach_copy_sector:
+        tza
+        tay
+        ldx #$03
+-       lda $d681,x		;; resolved sector number
+        sta $d68c,y  		;; sector number of disk image
+        dey
+        dex
+        bpl -
+
+        ;; disable real floppy
+        ldy <dos_attach_offset
+        lda dos_attach_realdrv_bits,y
+        trb $d6a1
+
         ;; Set flags to indicate it is mounted (and read-write).
         ;; clear D65 mega disk flag,
         ;; But don't mess up the flags for the 2nd drive
-	lda $d68b
-	and #%10111000
-        ora #$07
-        sta $d68b
-	;; Clear D64 flag
-	lda #$40
-	trb $d68a
+        lda dos_attach_imgena_bits,y
+        tsb $d68b
+        ;; Clear D64 flag
+        lda dos_attach_typeflg_bits,y
+        tax
+        trb $d68a
 
-	;; Check what dos_d81check detected
-        lda d81_lasttype
+        ;; Check what dos_checkimage detected
+        lda <disk_lasttype
         cmp #64
-	bne not_d64
+        bne @not_d64
 
-	;; Set D64 flag
-	lda #$40
-	tsb $d68a
-	jmp d81attach0_typeset
-	
-not_d64:
-	cmp #71
-	bne not_d71
+        ;; Set D64 flag
+        txa
+        tsb $d68a
+        bra @d81attach_typeset
 
-	;; D71 disk image
-	;; Set both the D64 and the D65 flags to mean "big D64" = D71 image
-	lda #$40
-	tsb $d68a
-	tsb $d68b
-	jmp d81attach0_typeset
+@not_d64:
+        cmp #71
+        bne @not_d71
 
-not_d71:
-	cmp #65
-	bne d81attach0_typeset
+        ;; D71 disk image
+        ;; Set both the D64 and the D65 flags to mean "big D64" = D71 image
+        txa
+        tsb $d68a
+        tsb $d68b
+        bra @d81attach_typeset
+
+@not_d71:
+        cmp #65
+        bne @d81attach_typeset
 
         ;; D65 disk image
         ;; Set megadisk flag
-	lda #$40
-	tsb $d68b
+        txa
+        tsb $d68b
 
-d81attach0_typeset:
+@d81attach_typeset:
+        cpx #$80
+        beq @d81attach1_typeset
 
-        +Checkpoint "dos_d81attach0 <success>"
+        +Checkpoint "dos_attach 0 <success>"
 
         ;; Save name and set mount flag for disk image in process descriptor block
-        lda #d81_image_flag_mounted
+        lda #(d81_image_flag_mounted | d81_image_flag_write_en)
         sta currenttask_d81_image0_flags
 
         ldx dos_requested_filename_len
-
-        ;; Check if the filename of the disk image is too long
-        cpx #d81_image_max_namelen
-        bcs @d81NameTooLongForProcessDescriptor
 
         ;; Name not too long, save name and length
         stx currenttask_d81_image0_namelen
@@ -4040,108 +4459,17 @@ d81attach0_typeset:
         cpx currenttask_d81_image0_namelen
         bne -
 
-        sec
-        rts
+        bra @attach_success
 
-@d81NameTooLongForProcessDescriptor:
-        ;; Name is too long, so don't save it.
-        ;; This means that the disk image will unmount on freeze, and will not re-mount after
-        ;; XXX - This should probably be an error.
-        lda #0
-        sta currenttask_d81_image0_namelen
+@d81attach1_typeset:
 
-        sec
-        rts
-
-dos_d81attach1:
-
-        ;; Assumes only that D81 file name has been set with dos_setname.
-        ;;
-        jsr dos_findfile
-        bcs d81a1b
-
-        lda #dos_errorcode_file_not_found
-        clc
-        rts
-
-;;         ========================
-
-d81a1b: ;; Why do we call closefile here?
-        ;; -> because dos_findfile/first only closes on file_not_found
-        jsr dos_closefile
-
-        jsr dos_d81check
-        bcs d81a1ab
-        rts
-d81a1ab:	
-
-        ;; copy sector number from $D681 to $D690
-        ;;
-        ldx #$03
-l94db:  lda $d681,x		;; resolved sector number
-        sta $d690,x  		;; sector number of disk image #1
-        dex
-        bpl l94db
-		
-        ;; disable real floppy 1
-        lda $d6a1
-        and #$fb
-        sta $d6a1
-        
-        ;; Set flags to indicate it is mounted (and read-write).
-        ;; clear D65 mega disk flag,
-        ;; But don't mess up the flags for the 2nd drive
-	lda $d68b
-	and #%01000111
-        ora #$38
-        sta $d68b
-	;; Clear D64 flag
-	lda #$80
-	trb $d68a
-
-	;; Check what dos_d81check detected
-        lda d81_lasttype
-        cmp #64
-	bne not_d64b
-
-	;; Set D64 flag
-	lda #$80
-	tsb $d68a
-	jmp d81attach1_typeset
-	
-not_d64b:
-	cmp #71
-	bne not_d71b
-
-	;; D71 disk image
-	;; Set both the D64 and the D65 flags to mean "big D64" = D71 image
-	lda #$80
-	tsb $d68a
-	tsb $d68b
-	jmp d81attach1_typeset
-
-not_d71b:
-	cmp #65
-	bne d81attach1_typeset
-
-        ;; D65 disk image
-        ;; Set megadisk flag
-	lda #$80
-	tsb $d68b
-
-d81attach1_typeset:
-
-        +Checkpoint "dos_d81attach1 <success>"
+        +Checkpoint "dos_attach 1 <success>"
 
         ;; Save name and set mount flag for disk image in process descriptor block
-        lda #d81_image_flag_mounted
+        lda #(d81_image_flag_mounted | d81_image_flag_write_en)
         sta currenttask_d81_image1_flags
 
         ldx dos_requested_filename_len
-
-        ;; Check if the filename of the disk image is too long
-        cpx #d81_image_max_namelen
-        bcs @d81NameTooLongForProcessDescriptor1
 
         ;; Name not too long, save name and length
         stx currenttask_d81_image1_namelen
@@ -4152,21 +4480,10 @@ d81attach1_typeset:
         cpx currenttask_d81_image1_namelen
         bne -
 
-        sec
-        rts
+@attach_success:
+        jmp dos_return_success
 
-@d81NameTooLongForProcessDescriptor1:
-        ;; Name is too long, so don't save it.
-        ;; This means that the disk image will unmount on freeze, and will not re-mount after
-        ;; XXX - This should probably be an error.
-        lda #0
-        sta currenttask_d81_image1_namelen
-
-        sec
-        rts
-
-	
-dos_d81check:	
+dos_checkimage:
         ;; now we need to check that the file is long enough,
         ;; and also that the clusters are contiguous.
 
@@ -4178,7 +4495,7 @@ dos_d81check:
         jsr dos_openfile
         bcs @fileOpenedOk
 @fileNotOpenedOk:
-        jmp not81
+        jmp dos_return_error_already_set
 @fileOpenedOk:
 
         ;; work out how many clusters we need
@@ -4189,22 +4506,22 @@ dos_d81check:
         ;; TODO: D65 clusters are not calculated yet, but hardcoded below
         ;;
         lda #$00
-        sta d81_clustercount
-        sta d81_clustercount+1
+        sta <d81_clustercount
+        sta <d81_clustercount+1
         lda #<1600
-        sta d81_clustersneeded
+        sta <d81_clustersneeded
         lda #>1600
-        sta d81_clustersneeded+1
+        sta <d81_clustersneeded+1
         ;; 1541 - rounded up to 512b sectors 344*512 = 176128, D64 = 174848
         lda #<344
-        sta d64_clustersneeded
+        sta <d64_clustersneeded
         lda #>344
-        sta d64_clustersneeded+1
+        sta <d64_clustersneeded+1
         ;; 1571 - rounded up to 512b sectors 688*512 = 352256, D71 = 349696
         lda #<688
-        sta d71_clustersneeded
+        sta <d71_clustersneeded
         lda #>688
-        sta d71_clustersneeded+1
+        sta <d71_clustersneeded+1
 
         ;; get sectors per cluster of disk
         ;;
@@ -4218,12 +4535,12 @@ l94:    tza
         tza
         lsr
         taz
-        lsr d81_clustersneeded+1
-        ror d81_clustersneeded
-        lsr d64_clustersneeded+1
-        ror d64_clustersneeded
-        lsr d71_clustersneeded+1
-        ror d71_clustersneeded
+        lsr <d81_clustersneeded+1
+        ror <d81_clustersneeded
+        lsr <d64_clustersneeded+1
+        ror <d64_clustersneeded
+        lsr <d71_clustersneeded+1
+        ror <d71_clustersneeded
         jmp l94
 
 d81firstcluster:
@@ -4251,9 +4568,9 @@ d81nextcluster:
 
 l94a:   lda dos_file_descriptors+dos_filedescriptor_offset_currentcluster,x
         cmp d81_clusternumber,y
-	beq not_a_frag
+        beq not_a_frag
         jmp d81isfragged
-not_a_frag:	
+not_a_frag:
         inx
         iny
         cpy #4
@@ -4261,105 +4578,95 @@ not_a_frag:
 
         ;; increment number of clusters found so far
         ;;
-        inc d81_clustercount
+        inc <d81_clustercount
         bne l96
-        inc d81_clustercount+1
+        inc <d81_clustercount+1
+        beq d81wronglength      ;; overflow means wrong length
 l96:
 
         ;; increment expected cluster number
         ;;
         clc
-        lda d81_clusternumber
+        lda <d81_clusternumber
         adc #$01
-        sta d81_clusternumber
-        lda d81_clusternumber+1
+        sta <d81_clusternumber
+        lda <d81_clusternumber+1
         adc #$00
-        sta d81_clusternumber+1
-        lda d81_clusternumber+2
+        sta <d81_clusternumber+1
+        lda <d81_clusternumber+2
         adc #$00
-        sta d81_clusternumber+2
-        lda d81_clusternumber+3
+        sta <d81_clusternumber+2
+        lda <d81_clusternumber+3
         adc #$00
-        sta d81_clusternumber+3
+        sta <d81_clusternumber+3
 
         jsr dos_file_advance_to_next_cluster
         bcs d81nextcluster
 
-        ;; The above continues until EOF is reached, so clear DOS
-        ;; error after.
-        ;;
-        lda #$00
-        sta dos_error_code
-
-        +Checkpoint "dos_d81attach <measured end of image>"
+        +Checkpoint "dos_checkimage <measured end of image>"
 
         jsr dos_closefile
 
         ;; we have read to end of D81 file, and it is contiguous
         ;; now check that it is the right length
 
-        ;; that is to much!
-	lda d81_clustercount+2
-	ora d81_clustercount+3
-	bne d81wronglength
+        ;; It might also be a D64 (1541) or D71 (1571) disk image,
+        ;; so check for 683x256/4096 = 42.6875 = 43 clusters or
+        ;; double that for D71
+        lda <d81_clustercount+1
+        cmp <d64_clustersneeded+1
+        bne not_1541
+        lda <d81_clustercount
+        cmp <d64_clustersneeded
+        bne not_1541_2
 
-	;; It might also be a D64 (1541) or D71 (1571) disk image,
-	;; so check for 683x256/4096 = 42.6875 = 43 clusters or
-	;; double that for D71
-	lda d81_clustercount+1
-        cmp d64_clustersneeded+1
-	bne not_1541
-	lda d81_clustercount
-	cmp d64_clustersneeded
-	bne not_1541_2
-
-	;;  IS a d64 sized file
+        ;;  IS a d64 sized file
         lda #64
-	bra d81_is_good
+        bra d81_is_good
 
 not_1541_2:
-        lda d81_clustercount+1
+        lda <d81_clustercount+1
 not_1541:
-        cmp d71_clustersneeded+1
+        cmp <d71_clustersneeded+1
         bne not_1571
-        lda d81_clustercount
-	cmp d71_clustersneeded
-	bne not_1571_2
+        lda <d81_clustercount
+        cmp <d71_clustersneeded
+        bne not_1571_2
 
-	;; IS a d71 sized file
+        ;; IS a d71 sized file
         lda #71
-	bra d81_is_good
+        bra d81_is_good
 
 not_1571_2:
-        lda d81_clustercount+1
+        lda <d81_clustercount+1
 not_1571:
-	;; First check if we read enough for 85 tracks x 64 sectors x 2 sides = 5,570,560 bytes
-	;; = 1,360 clusters = $0550 clusters
-	;; XXX - This currently assumes 8 sectors per cluster = 4KB sectors
-	cmp #$05
-	bne not_mega_floppy
-	lda d81_clustercount
-	cmp #$50
-	bne not_mega_floppy_2
+        ;; First check if we read enough for 85 tracks x 64 sectors x 2 sides = 5,570,560 bytes
+        ;; = 1,360 clusters = $0550 clusters
+        ;; XXX - This currently assumes 8 sectors per cluster = 4KB sectors
+        cmp #$05
+        bne not_mega_floppy
+        lda <d81_clustercount
+        cmp #$50
+        bne not_mega_floppy_2
 
         lda #65
         bra d81_is_good
 
 not_mega_floppy_2:
-        lda d81_clustersneeded+1
-not_mega_floppy:	
-	;; D81 image?
-        cmp d81_clustercount+1
+        lda <d81_clustersneeded+1
+not_mega_floppy:
+        ;; D81 image?
+        cmp <d81_clustercount+1
         bne d81wronglength
-        lda d81_clustersneeded
-        cmp d81_clustercount
+        lda <d81_clustersneeded
+        cmp <d81_clustercount
         bne d81wronglength
 
         lda #81
 
 d81_is_good:
         ;; disk image size is good. save type on stack for later
-        sta d81_lasttype
+        sta <disk_lasttype
 
         ;; Get cluster number again, convert to sector, and copy to
         ;; SD controller FDC emulation disk image offset registers
@@ -4376,40 +4683,26 @@ l94c:   lda dos_file_descriptors+dos_filedescriptor_offset_startcluster,x
 
         jsr dos_cluster_to_sector
 
-	sec
-	rts
-	
+        jmp dos_return_success
 
 ;;         ========================
 
 d81wronglength:
-        +Checkpoint "dos_d81attach <wrong length>"
+        +Checkpoint "dos_attach <wrong length>"
 
         lda #dos_errorcode_image_wrong_length
-        sta dos_error_code
-        clc
-        rts
+        jmp dos_return_error
 
 ;;         ========================
 
 d81isfragged:
-        +Checkpoint "dos_d81attach <fragmented>"
+        +Checkpoint "dos_attach <fragmented>"
 
         ;; close dangeling open descriptor
         jsr dos_closefile
 
         lda #dos_errorcode_image_fragmented
-        sta dos_error_code
-        clc
-        rts
-
-;;         ========================
-
-not81:
-        +Checkpoint "dos_d81attach <file not found>"
-
-        clc
-        rts
+        jmp dos_return_error
 
 ;;         ========================
 
